@@ -1,0 +1,105 @@
+<?xml version="1.0" ?>
+<sdf version="1.4">
+  <world name="default">
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose frame=''>8.18313 -3.28715 9.77259 0 0.855643 2.7162</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+    <physics type="ode">
+      <!--gravity>0 0 -1</gravity-->
+      <gravity>0 0 -9.8</gravity>
+      <ode>
+        <solver>
+          <type>quick</type>
+          <iters>20</iters>
+          <sor>1.0</sor>
+        </solver>
+        <constraints>
+          <cfm>0.0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100.0</contact_max_correcting_vel>
+          <contact_surface_layer>0.0</contact_surface_layer>
+        </constraints>
+      </ode>
+      <max_step_size>0.001</max_step_size>
+    </physics>
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://usar</uri>
+      <pose>0 0 0.001 0 0 0</pose>
+    </include>
+
+
+    <model name="aruco_marker_0">
+      <pose>4.803741 7.689550 0.4 0 0 2.857363</pose>
+      <include>
+        <name>aruco_marker_0</name>
+        <uri>model://aruco_marker_0</uri>
+      </include>
+    </model>
+
+    <model name="cylinder_1">
+      <pose>-1.372126 -5.429016 0.274994 0 0 0</pose>
+      <include>
+        <name>cylinder_1</name>
+        <uri>model://cylinder_green</uri>
+      </include>
+    </model>
+
+    <model name="cylinder_2">
+      <pose>-7.531620 -5.506830 0.274994 0 0 0</pose>
+      <include>
+        <name>cylinder_2</name>
+        <uri>model://cylinder_green</uri>
+      </include>
+    </model>
+    
+    <model name="cylinder_3">
+      <pose>-7.460810 5.541130 0.274994 0 0 0</pose>
+      <include>
+        <name>cylinder_3</name>
+        <uri>model://cylinder_green</uri>
+      </include>
+    </model>
+
+    <model name="cylinder_4">
+      <pose>-0.727859 7.925042 0.274994 0 0 0</pose>
+      <include>
+        <name>cylinder_4</name>
+        <uri>model://cylinder_green</uri>
+      </include>
+    </model>
+    <model name="cylinder_5">
+      <pose>7.499000 4.489690 0.274994 0 0 0</pose>
+      <include>
+        <name>cylinder_5</name>
+        <uri>model://cylinder_green</uri>
+      </include>
+    </model>
+
+    <model name="cylinder_6">
+      <pose>7.572780 -7.596420 0.274994 0 0 0</pose>
+      <include>
+        <name>cylinder_6</name>
+        <uri>model://cylinder_blue</uri>
+      </include>
+    </model>
+    <model name="cube_1">
+      <pose>-7.462762 5.530112 0.584022 0 0 0</pose>
+      <include>
+        <name>cube_red</name>
+        <uri>model://cube_red</uri>
+      </include>
+    </model>
+  </world>
+</sdf>

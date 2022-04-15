@@ -1,0 +1,3 @@
+rosrun map_server map_saver map:=/robot/move_base/global_costmap/costmap -f usar  
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/robot/move_base/cmd_vel
+roslaunch rbkairos_sim_bringup rbkairos_complete.launch launch_robot_b:=true moveit_movegroup_a:=true moveit_movegroup_b:=true
