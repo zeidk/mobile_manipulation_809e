@@ -4,7 +4,7 @@
     <!-- arg to config the launch file-->
 
     <arg name="launch_rviz" default="true"/>
-    <arg name="gazebo_world" default="$(find navigation_809e)/worlds/house.world"/>
+    <arg name="gazebo_world" default="$(find rbkairos_gazebo)/worlds/house.world"/>
     <arg name="default_map" default="house/house3.yaml"/>
     <arg name="default_arm_model" default="ur5"/>
     <arg name="default_gripper_model" default="egh"/>

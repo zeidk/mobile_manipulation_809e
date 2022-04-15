@@ -11,7 +11,7 @@
     <arg name="default_arm_model" default="ur10"/>
     <arg name="default_gripper_model" default="egh"/>
     <arg name="default_xacro" default="rbkairos_$(arg default_arm_model).urdf.xacro"/>
-    <arg name="gazebo_world" default="$(find navigation_809e)/worlds/house.world"/>
+    <arg name="gazebo_world" default="$(find rbkairos_gazebo)/worlds/house.world" />
     <arg name="debug" default="false"/>
     <arg name="ros_planar_move_plugin" default="true"/>
     <arg name="load_arm_kinematics_file" default="true"/>
