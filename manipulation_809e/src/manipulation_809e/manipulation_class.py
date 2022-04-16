@@ -19,18 +19,22 @@ from geometry_msgs.msg import Pose
 from geometry_msgs.msg import TransformStamped
 from std_srvs.srv import Trigger
 from std_msgs.msg import String
+from moveit_python import MoveGroupInterface, PlanningSceneInterface, PickPlaceInterface
 from tf.transformations import quaternion_multiply, quaternion_from_euler
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
+
 # moveit
 import moveit_commander as mc
 
 class MoveitKairos():
 
-    def __init__(self, node_name='moveit_kairos_809e', ns='',
+    def __init__(self, node_name='pick_and_place', ns='',
                  robot_description='robot_description'):
 
         mc.roscpp_initialize(sys.argv)
-        rospy.init_node(node_name, anonymous=False)
-
+        rospy.init_node(node_name, anonymous=True)
+        # self._pick_place = PickPlaceInterface("ur5_arm", "egh_gripper", verbose=True)
+        self.trajectory_pub = rospy.Publisher('/robot/gripper/pos_traj_controller/command', JointTrajectory, queue_size=10)
         self.locations={}
         # Joint positions for the arm
 
@@ -43,7 +47,7 @@ class MoveitKairos():
        
         
         name = 'home'
-        kairos_arm = [pi/4, 0, -2, 2, pi/2, -pi/2]
+        kairos_arm = [pi/4, 0, -2, 2, pi/2, 0]
         self.locations[name] = (kairos_arm)
 
         name = 'check'
@@ -55,6 +59,9 @@ class MoveitKairos():
         self.locations[name] = (kairos_arm)
 
 
+
+
+
         self.robot = mc.RobotCommander(ns + '/' + robot_description, ns)
         self.scene = mc.PlanningSceneInterface(ns)
         # Define MoveIt groups
@@ -62,15 +69,44 @@ class MoveitKairos():
 
         self.groups = {}
         for group_name in self.kairos_moveit_groups:
-            group = mc.MoveGroupCommander(
-                group_name,
-                robot_description=ns + '/' + robot_description,
-                ns=ns
-            )
-            group.set_goal_tolerance(0.05)
+            if group_name == "ur5_arm":
+                group = mc.MoveGroupCommander(group_name, robot_description=ns + '/' + robot_description, ns=ns)
+            elif group_name == "egh_gripper":
+                group = mc.MoveGroupCommander(group_name, robot_description=ns + '/' + robot_description, ns=ns)
+                group.set_goal_tolerance(0.05)
             self.groups[group_name] = group
         # self.goto_preset_location("check")
         # self.go_home()
+
+    def open_gripper(self):
+        jt = JointTrajectory()
+        jt.joint_names = ['robot_egh_gripper_finger_left_joint']
+        jt.header.stamp = rospy.Time.now()
+        jtp = JointTrajectoryPoint()
+        jtp.positions = [0.04]
+        jtp.velocities = [0.01]
+        jtp.time_from_start = rospy.Duration(3.0)
+        jt.points.append(jtp)
+        self.trajectory_pub.publish(jt)
+
+
+        # group = self.groups['egh_gripper']
+        # finger_position = group.get_current_joint_values()
+        # # rospy.loginfo(finger_position)
+        # finger_position = [0.02]
+        # group.set_joint_value_target(finger_position)
+        # group.go()
+
+    def close_gripper(self):
+        jt = JointTrajectory()
+        jt.joint_names = ['robot_egh_gripper_finger_left_joint']
+        jt.header.stamp = rospy.Time.now()
+        jtp = JointTrajectoryPoint()
+        jtp.positions = [0.00]
+        jtp.velocities = [0.01]
+        jtp.time_from_start = rospy.Duration(3.0)
+        jt.points.append(jtp)
+        self.trajectory_pub.publish(jt)
 
     def go_home(self):
         self.goto_preset_location('home')

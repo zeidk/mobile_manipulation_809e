@@ -250,6 +250,20 @@ void ROSLogicalCameraPlugin::FindLogicalCamera()
   }
 }
 
+void ROSLogicalCameraPlugin::PublishTF(
+  const ignition::math::Pose3d & pose, const std::string & parentFrame, const std::string & frame)
+{
+  ros::Time currentTime = ros::Time::now();
+
+  tf::Quaternion qt(pose.Rot().X(), pose.Rot().Y(), pose.Rot().Z(), pose.Rot().W());
+  tf::Vector3 vt(pose.Pos().X(), pose.Pos().Y(), pose.Pos().Z());
+
+  tf::Transform transform (qt, vt);
+  transformBroadcaster->sendTransform(tf::StampedTransform(transform, currentTime, parentFrame, frame));
+
+}
+
+
 /////////////////////////////////////////////////
 void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
 {
@@ -262,8 +276,7 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
   ignition::math::Quaterniond cameraOrientation =
     msgs::ConvertIgn(_msg->pose().orientation());
   auto cameraPose = ignition::math::Pose3d(cameraPosition, cameraOrientation);
-  // Camera pose already present in static TF publisher
-  // this->PublishTF(cameraPose, "world", this->name + "_frame");
+  this->PublishTF(cameraPose, "robot_map", this->name + "_frame");
 
   imageMsg.pose.position.x = cameraPosition.X();
   imageMsg.pose.position.y = cameraPosition.Y();
@@ -346,8 +359,8 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
   this->imagePub.publish(imageMsg);
 
   // Publish the aggregated transforms
-  if (!transforms.empty())
-    transformBroadcaster->sendTransform(transforms);
+  // if (!transforms.empty())
+  //   transformBroadcaster->sendTransform(transforms);
 }
 
 bool ROSLogicalCameraPlugin::ModelToPublish(

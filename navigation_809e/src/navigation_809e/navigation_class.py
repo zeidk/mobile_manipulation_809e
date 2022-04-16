@@ -30,6 +30,7 @@ class Navigation():
         # MoveBase stuff
         self._check = [-6.3703, 2.2929, 0, 0, 0, -0.6866, 0.727]
         self._home = [0, 0, 0, 0, 0, 0, 1]
+        self._table2 = [-1.70789669814, 4.087609, 0, 0, 0, 1, 0]
         self.client = actionlib.SimpleActionClient('robot/move_base', MoveBaseAction)
         self.client.wait_for_server()
         self.goal = MoveBaseGoal()
@@ -107,6 +108,8 @@ class Navigation():
                 chosen_spot = copy.deepcopy(self._home)
             elif spot=="check":
                 chosen_spot = copy.deepcopy(self._check)
+            elif spot=="table2":
+                chosen_spot = copy.deepcopy(self._table2)
             self.goal.target_pose.pose.position.x = chosen_spot[0]
             self.goal.target_pose.pose.position.y = chosen_spot[1]
             self.goal.target_pose.pose.orientation.x = chosen_spot[3]

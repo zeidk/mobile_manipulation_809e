@@ -43,6 +43,47 @@
     <pose>-7.186030 1.111473 0.8183330 0 0 1.57</pose>
   </model>
 
+  <model name="table_1_marker">
+    <include>
+      <static>true</static>
+      <uri>model://aruco_marker_1</uri>
+    </include>
+    <pose>-5.700323 -3.155610 0.889384 0 0 1.57</pose>
+  </model>
+
+  <model name="table_2_marker">
+    <include>
+      <static>true</static>
+      <uri>model://aruco_marker_2</uri>
+    </include>
+    <pose>-0.264755 4.42376 0.889384 0 0 3.14</pose>
+  </model>
+
+  <!-- Part on table 2 -->
+  <model name="assembly_pump_green_0">
+    <include>
+      <static>false</static>
+      <uri>model://assembly_pump_green_ariac</uri>
+    </include>
+    <pose>-1.093374 4.087609 0.889384 0 0 0</pose>
+  </model>
+
+  <model name="table_3_marker">
+    <include>
+      <static>true</static>
+      <uri>model://aruco_marker_3</uri>
+    </include>
+    <pose>0.045670 2.6 0.889384 0 0 0</pose>
+  </model>
+
+  <model name="table_4_marker">
+    <include>
+      <static>true</static>
+      <uri>model://aruco_marker_0</uri>
+    </include>
+    <pose>5.65 -4.903477 0.889384 0 0 1.57</pose>
+  </model>
+
   <model name="logical_camera_1">
       <static>true</static>
       <pose>-5.739203 -2.837389 1.701710 3.141593 1.570792 0.0</pose>
@@ -137,12 +178,12 @@
           </noise>
         </orientation_noise>
         <known_model_types>
-          <type>assembly_battery_red_ariac</type>
-          <type>assembly_battery_green_ariac</type>
-          <type>assembly_battery_blue_ariac</type>
-          <type>assembly_pump_red_ariac</type>
-          <type>assembly_pump_green_ariac</type>
-          <type>assembly_pump_blue_ariac</type>
+          <type>assembly_battery_red</type>
+          <type>assembly_battery_green</type>
+          <type>assembly_battery_blue</type>
+          <type>assembly_pump_red</type>
+          <type>assembly_pump_green</type>
+          <type>assembly_pump_blue</type>
         </known_model_types>
         <anonymize_models>false</anonymize_models>
         <activation_topic>/ariac/sensor_enable</activation_topic>

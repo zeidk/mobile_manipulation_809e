@@ -9,18 +9,43 @@ import rospy
 def main():
     rospy.init_node('pick_and_place', anonymous=True)
     manipulation = manipulation_class.MoveitKairos(ns='/robot')
+    manipulation.goto_preset_location("home")
+    part_pose = [-1.093374, 4.087609, 0.889384, 0, 0, 0]
+    kairos_arm = manipulation.groups['ur5_arm']
+    kairos_arm.set_goal_orientation_tolerance = 0.02
+    kairos_arm.set_goal_position_tolerance = 0.02
+    ee_pose = kairos_arm.get_current_pose().pose
+    
+
+    # kairos_joints = kairos_arm.get_current_joint_values()
+    kairos_arm.set_joint_value_target(ee_pose)
+    kairos_arm.go()
+    rospy.sleep(0.5)
+
+    manipulation.open_gripper()
+    manipulation.close_gripper()
+    
     # moveit_kairos.handle_inputs()
     navigation = navigation_class.Navigation()
-    # navigation.handle_inputs()
-    # manipulation.goto_preset_location("retract")
-    # manipulation.goto_preset_location("home")
-    # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="home")
-    navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="check")
-    manipulation.goto_preset_location("retract")
-    manipulation.goto_preset_location("check")
-    manipulation.goto_preset_location("retract")
-    manipulation.goto_preset_location("home")
-    navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="home")
+    # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="table2")
+
+    # # navigation.handle_inputs()
+    # # manipulation.goto_preset_location("retract")
+    # # manipulation.goto_preset_location("home")
+    
+    # ee_pose.position.x = part_pose[0]-0.05
+    # ee_pose.position.y = part_pose[1]
+    # kairos_arm.set_joint_value_target(ee_pose)
+
+    
+    
+    # # manipulation.goto_preset_location("table2")
+    # # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="check")
+    # # manipulation.goto_preset_location("retract")
+    # # manipulation.goto_preset_location("check")
+    # # manipulation.goto_preset_location("retract")
+    # # manipulation.goto_preset_location("home")
+    # # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="home")
 
 if __name__ == '__main__':
     main()

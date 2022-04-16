@@ -147,6 +147,7 @@ namespace gazebo
   std::string DetermineModelId(const std::string& modelName);
 
   std::string TrimNamespace(const std::string& modelName);
+  void PublishTF(const ignition::math::Pose3d & pose, const std::string & parentFrame, const std::string & frame);
   };
 }
 #endif

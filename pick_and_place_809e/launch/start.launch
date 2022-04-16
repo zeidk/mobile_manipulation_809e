@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<launch>
+    <include file="$(find rbkairos_sim_bringup)/launch/rbkairos_complete.launch"/>
+</launch>

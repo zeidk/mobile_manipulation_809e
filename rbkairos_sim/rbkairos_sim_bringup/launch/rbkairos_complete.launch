@@ -36,7 +36,7 @@
     <!-- arm robot a -->
     <arg name="launch_arm_a" default="true"/>
     <arg name="arm_model_a" default="$(arg default_arm_model)"/>
-    <arg name="moveit_movegroup_a" default="false"/>
+    <arg name="moveit_movegroup_a" default="true"/>
     <!-- gripper robot a -->
     <arg name="launch_gripper_a" default="true"/>
     <arg name="gripper_model_a" default="$(arg default_gripper_model)"/>
