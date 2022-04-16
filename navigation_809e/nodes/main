@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import rospy
+from navigation_809e.navigation_class import Navigation
+
+
+
+
+if __name__ == '__main__':
+    try:
+        navigation = Navigation()
+        navigation.handle_inputs()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("Action terminated.")

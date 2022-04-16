@@ -2,22 +2,25 @@
 
 # ros
 from manipulation_809e  import manipulation_class
+from navigation_809e  import navigation_class
 import rospy
 
 
-
-
-
 def main():
-    # Instance of MoveitKairos
-    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    # Do not modify the value of the ns parameters
-    try:
-        moveit_kairos = manipulation_class.MoveitKairos(ns='/robot')
-        moveit_kairos.handle_inputs()
-    except rospy.ROSInterruptException:
-        rospy.loginfo("Action terminated.")
-
+    rospy.init_node('pick_and_place', anonymous=True)
+    manipulation = manipulation_class.MoveitKairos(ns='/robot')
+    # moveit_kairos.handle_inputs()
+    navigation = navigation_class.Navigation()
+    # navigation.handle_inputs()
+    # manipulation.goto_preset_location("retract")
+    # manipulation.goto_preset_location("home")
+    # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="home")
+    navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="check")
+    manipulation.goto_preset_location("retract")
+    manipulation.goto_preset_location("check")
+    manipulation.goto_preset_location("retract")
+    manipulation.goto_preset_location("home")
+    navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="home")
 
 if __name__ == '__main__':
     main()
