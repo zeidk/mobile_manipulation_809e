@@ -5,6 +5,7 @@ import sys
 import tf
 import os
 import yaml
+import copy
 from geometry_msgs.msg import Twist, Point
 from nav_msgs.msg import Odometry
 from navigation_809e.util import compute_distance
@@ -27,6 +28,10 @@ class BotController(object):
             'cmd_vel', Twist, queue_size=10)
         rospy.Subscriber("odom", Odometry, self.odom_callback)
         rospy.Subscriber("scan", LaserScan, self.sensor_callback)
+
+        self._check = [-6.3703, 2.2929, 0, 0, 0, -0.6866, 0.727]
+        self._home = [0, 0, 0, 0, 0, 0, 1]
+        
 
         self._rate = rospy.Rate(rate)
         self._robot_name = 'waffle'
@@ -281,15 +286,34 @@ class BotController(object):
                 rospy.loginfo("Goal reached")
                 break
             
-    def movebase_client(self, goal_x, goal_y):
-        client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+    def movebase_client(self, goal_x=None, goal_y=None, goal_yaw=None, spot=None):
+        client = actionlib.SimpleActionClient('robot/move_base', MoveBaseAction)
         client.wait_for_server()
         goal = MoveBaseGoal()
-        goal.target_pose.header.frame_id = "map"
+        goal.target_pose.header.frame_id = "robot_map"
         goal.target_pose.header.stamp = rospy.Time.now()
-        goal.target_pose.pose.position.x = goal_x
-        goal.target_pose.pose.position.y = goal_y
-        goal.target_pose.pose.orientation.w = 1.0
+        chosen_spot = []
+        if spot is not None:
+            if spot=="home":
+                chosen_spot = copy.deepcopy(self._home)
+            elif spot=="check":
+                chosen_spot = copy.deepcopy(self._check)
+            goal.target_pose.pose.position.x = chosen_spot[0]
+            goal.target_pose.pose.position.y = chosen_spot[1]
+            goal.target_pose.pose.orientation.x = chosen_spot[3]
+            goal.target_pose.pose.orientation.y = chosen_spot[4]
+            goal.target_pose.pose.orientation.z = chosen_spot[5]
+            goal.target_pose.pose.orientation.w = chosen_spot[6]
+        else:
+            goal.target_pose.pose.position.x = goal_x
+            goal.target_pose.pose.position.y = goal_y
+            quaternion = tf.transformations.quaternion_from_euler(0, 0, goal_yaw)
+            #type(pose) = geometry_msgs.msg.Pose
+            goal.target_pose.pose.orientation.x = quaternion[0]
+            goal.target_pose.pose.orientation.y = quaternion[1]
+            goal.target_pose.pose.orientation.z = quaternion[2]
+            goal.target_pose.pose.orientation.w = quaternion[3]
+        
 
         client.send_goal(goal)
         wait = client.wait_for_result()
@@ -357,15 +381,26 @@ class BotController(object):
                 rospy.logerr("x or y is missing")
                 rospy.on_shutdown(self.myhook)
                 sys.exit(1)
-        elif action_name == "move_base":
+        elif action_name == "moveto":
             x = None
             y = None
-            x = rospy.get_param("~x")
-            y = rospy.get_param("~y")
-            if x is not None and y is not None:
-                self.movebase_client(x, y)
+            yaw = None
+            spot = None
+            if rospy.has_param('~x'):
+                x = rospy.get_param("~x")
+            if rospy.has_param('~y'):
+                y = rospy.get_param("~y")
+            if rospy.has_param('~yaw'):
+                yaw = rospy.get_param("~yaw")
+            if rospy.has_param('~spot'):
+                spot = rospy.get_param("~spot")
+
+            if x is not None and y is not None and yaw is not None:
+                self.movebase_client(goal_x=x, goal_y=y, goal_yaw=yaw, spot=None)
+            if spot is not None:
+                self.movebase_client(goal_x=None, goal_y=None, goal_yaw=None, spot=spot)
             else:
-                rospy.logerr("x or y is missing")
+                rospy.logerr("x, y, yaw, or spot is missing")
                 rospy.on_shutdown(self.myhook)
                 sys.exit(1)
         elif action_name == "broadcast":

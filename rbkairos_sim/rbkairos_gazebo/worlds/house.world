@@ -31,6 +31,320 @@
       </ode>
     </physics>
 
+
+      <model name="CageFactory1">
+        <include>
+          <static>true</static>
+          <uri>model://cage_factory</uri>
+        </include>
+        <pose frame=''>-17.6 -0.5 0. 0 0 0</pose>
+      </model>
+
+
+  <model name="marker_to_find">
+    <include>
+      <static>true</static>
+      <uri>model://aruco_marker_0</uri>
+    </include>
+    <pose>-7.186030 1.111473 0.8183330 0 0 1.57</pose>
+  </model>
+
+  <model name="logical_camera_1">
+      <static>true</static>
+      <pose>-5.739203 -2.837389 1.701710 3.141593 1.570792 0.0</pose>
+      <plugin name="ros_logical_camera" filename="libROSLogicalCameraPlugin.so">
+        <robotNamespace>logical_camera</robotNamespace>
+        <position_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </position_noise>
+        <orientation_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </orientation_noise>
+        <known_model_types>
+          <type>assembly_battery_red_ariac</type>
+          <type>assembly_battery_green_ariac</type>
+          <type>assembly_battery_blue_ariac</type>
+          <type>assembly_pump_red_ariac</type>
+          <type>assembly_pump_green_ariac</type>
+          <type>assembly_pump_blue_ariac</type>
+        </known_model_types>
+        <anonymize_models>false</anonymize_models>
+        <activation_topic>/ariac/sensor_enable</activation_topic>
+      </plugin>
+      <link name="link">
+        <gravity>false</gravity>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+
+        <!--collision name="collision">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </collision-->
+
+        <visual name="visual">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <sensor name="logical_camera" type="logical_camera">
+          <logical_camera>
+            <near>0.2</near>
+            <far>1.1</far>
+            <horizontal_fov>1.5</horizontal_fov>
+            <aspect_ratio>1.2</aspect_ratio>
+          </logical_camera>
+
+          <visualize>True</visualize>
+          <always_on>true</always_on>
+          <update_rate>10</update_rate>
+        </sensor>
+      </link>
+    </model>
+
+  <model name="logical_camera_2">
+      <static>true</static>
+      <pose>-0.703821 4.357522 1.701710 3.141593 1.570792 0.0</pose>
+      <plugin name="ros_logical_camera" filename="libROSLogicalCameraPlugin.so">
+        <robotNamespace>logical_camera</robotNamespace>
+        <position_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </position_noise>
+        <orientation_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </orientation_noise>
+        <known_model_types>
+          <type>assembly_battery_red_ariac</type>
+          <type>assembly_battery_green_ariac</type>
+          <type>assembly_battery_blue_ariac</type>
+          <type>assembly_pump_red_ariac</type>
+          <type>assembly_pump_green_ariac</type>
+          <type>assembly_pump_blue_ariac</type>
+        </known_model_types>
+        <anonymize_models>false</anonymize_models>
+        <activation_topic>/ariac/sensor_enable</activation_topic>
+      </plugin>
+      <link name="link">
+        <gravity>false</gravity>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+
+        <!--collision name="collision">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </collision-->
+
+        <visual name="visual">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <sensor name="logical_camera" type="logical_camera">
+          <logical_camera>
+            <near>0.2</near>
+            <far>1.1</far>
+            <horizontal_fov>1.5</horizontal_fov>
+            <aspect_ratio>1.2</aspect_ratio>
+          </logical_camera>
+
+          <visualize>True</visualize>
+          <always_on>true</always_on>
+          <update_rate>10</update_rate>
+        </sensor>
+      </link>
+    </model>
+
+    <model name="logical_camera_3">
+      <static>true</static>
+      <pose>0.786694 2.865128 1.701710 3.141593 1.570792 0.0</pose>
+      <plugin name="ros_logical_camera" filename="libROSLogicalCameraPlugin.so">
+        <robotNamespace>logical_camera</robotNamespace>
+        <position_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </position_noise>
+        <orientation_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </orientation_noise>
+        <known_model_types>
+          <type>assembly_battery_red_ariac</type>
+          <type>assembly_battery_green_ariac</type>
+          <type>assembly_battery_blue_ariac</type>
+          <type>assembly_pump_red_ariac</type>
+          <type>assembly_pump_green_ariac</type>
+          <type>assembly_pump_blue_ariac</type>
+        </known_model_types>
+        <anonymize_models>false</anonymize_models>
+        <activation_topic>/ariac/sensor_enable</activation_topic>
+      </plugin>
+      <link name="link">
+        <gravity>false</gravity>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+
+        <!--collision name="collision">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </collision-->
+
+        <visual name="visual">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <sensor name="logical_camera" type="logical_camera">
+          <logical_camera>
+            <near>0.2</near>
+            <far>1.1</far>
+            <horizontal_fov>1.5</horizontal_fov>
+            <aspect_ratio>1.2</aspect_ratio>
+          </logical_camera>
+
+          <visualize>True</visualize>
+          <always_on>true</always_on>
+          <update_rate>10</update_rate>
+        </sensor>
+      </link>
+    </model>
+
+  <model name="logical_camera_4">
+      <static>true</static>
+      <pose>5.623647 -4.567452 1.701710 3.141593 1.570792 0.0</pose>
+      <plugin name="ros_logical_camera" filename="libROSLogicalCameraPlugin.so">
+        <robotNamespace>logical_camera</robotNamespace>
+        <position_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.001</stddev>
+          </noise>
+        </position_noise>
+        <orientation_noise>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </orientation_noise>
+        <known_model_types>
+          <type>assembly_battery_red_ariac</type>
+          <type>assembly_battery_green_ariac</type>
+          <type>assembly_battery_blue_ariac</type>
+          <type>assembly_pump_red_ariac</type>
+          <type>assembly_pump_green_ariac</type>
+          <type>assembly_pump_blue_ariac</type>
+        </known_model_types>
+        <anonymize_models>false</anonymize_models>
+        <activation_topic>/ariac/sensor_enable</activation_topic>
+      </plugin>
+      <link name="link">
+        <gravity>false</gravity>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.000166667</ixx>
+            <iyy>0.000166667</iyy>
+            <izz>0.000166667</izz>
+          </inertia>
+        </inertial>
+
+        <!--collision name="collision">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </collision-->
+
+        <visual name="visual">
+          <pose>0 0.02 0 0 0 -1.5708</pose>
+          <geometry>
+            <mesh>
+              <uri>model://logical_camera_ariac/meshes/camera.dae</uri>
+            </mesh>
+          </geometry>
+        </visual>
+
+        <sensor name="logical_camera" type="logical_camera">
+          <logical_camera>
+            <near>0.2</near>
+            <far>1.1</far>
+            <horizontal_fov>1.5</horizontal_fov>
+            <aspect_ratio>1.2</aspect_ratio>
+          </logical_camera>
+
+          <visualize>True</visualize>
+          <always_on>true</always_on>
+          <update_rate>10</update_rate>
+        </sensor>
+      </link>
+    </model>
+
     <include>
       <uri>model://house</uri>
     </include>

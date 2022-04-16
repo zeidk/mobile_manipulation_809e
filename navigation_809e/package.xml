@@ -70,6 +70,10 @@
   <build_depend>turtlebot3_msgs</build_depend>
   <build_depend>rtabmap</build_depend>
   <build_depend>rtabmap_ros</build_depend>
+  <build_depend>moveit_commander</build_depend>
+  <build_depend>slam_gmapping</build_depend>
+
+
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>nav_msgs</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
@@ -91,6 +95,10 @@
   <build_export_depend>turtlebot3_navigation</build_export_depend>
   <build_export_depend>rtabmap</build_export_depend>
   <build_export_depend>rtabmap_ros</build_export_depend>
+  <build_export_depend>moveit_commander</build_export_depend>
+  <build_export_depend>slam_gmapping</build_export_depend>
+
+
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
   <exec_depend>rospy</exec_depend>
@@ -112,6 +120,8 @@
   <exec_depend>turtlebot3_navigation</exec_depend>
   <exec_depend>rtabmap</exec_depend>
   <exec_depend>rtabmap_ros</exec_depend>
+  <exec_depend>moveit_commander</exec_depend>
+  <exec_depend>slam_gmapping</exec_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

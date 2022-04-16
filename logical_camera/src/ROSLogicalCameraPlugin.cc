@@ -308,10 +308,9 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
       }
       std::string modelFrameId = this->modelFramePrefix + modelNameToUse + "_frame";
 
-      else
-      {
-        this->AddNoise(modelPose);
-      }
+      
+      this->AddNoise(modelPose);
+      
       this->AddModelToMsg(modelTypeToUse, modelPose, imageMsg);
       transforms.push_back(this->ToTransformStamped(modelPose, this->name + "_frame", modelFrameId));
 

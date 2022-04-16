@@ -40,6 +40,7 @@
         </visual>
     </link>
 
+
       <link name='post1'>
         <collision name='pole_1'>
           <pose>-2 -1 0.25 0 0 0</pose>
@@ -5197,7 +5198,7 @@
       </link>
       <pose frame=''>-7.18363 1.24799 0 0 0 -1.5708</pose>
     </model>
-    <model name='cafe_table'>
+    <model name='table_4'>
       <static>1</static>
       <link name='link'>
         <collision name='surface'>
@@ -5235,7 +5236,7 @@
       <pose frame=''>5.65 -4.45 0 0 -0 0</pose>
     </model>
 
-    <model name='cafe_table_4'>
+    <model name='table_1'>
       <static>1</static>
       <link name='link'>
         <collision name='surface'>
@@ -5309,7 +5310,7 @@
       </link>
       <pose frame=''>6.35903 -2.27759 0 0 -0 0</pose>
     </model> -->
-        <model name='cafe_table_2'>
+        <model name='table_3'>
       <static>1</static>
       <link name='link'>
         <collision name='surface'>
@@ -5540,7 +5541,7 @@
       </link>
       <pose frame=''>-2.65728 2.42376 0 0 -0 0</pose>
     </model> -->
-    <model name='cafe_table_3'>
+    <model name='table_2'>
       <static>1</static>
       <link name='link'>
         <collision name='surface'>
