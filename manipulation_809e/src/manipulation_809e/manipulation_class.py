@@ -23,12 +23,11 @@ from tf.transformations import quaternion_multiply, quaternion_from_euler
 # moveit
 import moveit_commander as mc
 
-
-
 class MoveitKairos():
 
-    def __init__(self, group_names, node_name='moveit_kairos_809e', ns='',
+    def __init__(self, node_name='moveit_kairos_809e', ns='',
                  robot_description='robot_description'):
+
         mc.roscpp_initialize(sys.argv)
         rospy.init_node(node_name, anonymous=False)
 
@@ -58,8 +57,11 @@ class MoveitKairos():
 
         self.robot = mc.RobotCommander(ns + '/' + robot_description, ns)
         self.scene = mc.PlanningSceneInterface(ns)
+        # Define MoveIt groups
+        self.kairos_moveit_groups = ['ur5_arm', 'egh_gripper']
+
         self.groups = {}
-        for group_name in group_names:
+        for group_name in self.kairos_moveit_groups:
             group = mc.MoveGroupCommander(
                 group_name,
                 robot_description=ns + '/' + robot_description,
@@ -117,21 +119,3 @@ class MoveitKairos():
                 rospy.logerr("Unknown arm configuration")
                 rospy.on_shutdown(self.myhook)
                 sys.exit(1)
-
-def main():
-
-    # Define MoveIt groups
-    kairos_moveit_groups = ['ur5_arm', 'egh_gripper']
-
-    # Instance of MoveitKairos
-    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    # Do not modify the value of the ns parameters
-    try:
-        moveit_kairos = MoveitKairos(kairos_moveit_groups, ns='/robot')
-        moveit_kairos.handle_inputs()
-    except rospy.ROSInterruptException:
-        rospy.loginfo("Action terminated.")
-
-
-if __name__ == '__main__':
-    main()

@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <launch>
 
+  <rosparam file="$(find navigation_809e)/param/aruco_lookup.yaml" command="load" />
     <!-- arg to config the launch file-->
 
     <arg name="launch_rviz" default="true"/>

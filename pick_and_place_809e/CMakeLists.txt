@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(manipulation_809e)
+project(pick_and_place_809e)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -12,6 +12,8 @@ rospy
 std_msgs
 sensor_msgs
 geometry_msgs
+navigation_809e
+manipulation_809e
 )
 
 ## System dependencies are found with CMake's conventions
@@ -21,7 +23,7 @@ geometry_msgs
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-catkin_python_setup()
+# catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##

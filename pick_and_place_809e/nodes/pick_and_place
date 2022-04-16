@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+# ros
+from manipulation_809e  import manipulation_class
+import rospy
+
+
+
+
+
+def main():
+    # Instance of MoveitKairos
+    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    # Do not modify the value of the ns parameters
+    try:
+        moveit_kairos = manipulation_class.MoveitKairos(ns='/robot')
+        moveit_kairos.handle_inputs()
+    except rospy.ROSInterruptException:
+        rospy.loginfo("Action terminated.")
+
+
+if __name__ == '__main__':
+    main()
