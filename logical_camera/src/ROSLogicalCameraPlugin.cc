@@ -359,8 +359,8 @@ void ROSLogicalCameraPlugin::OnImage(ConstLogicalCameraImagePtr &_msg)
   this->imagePub.publish(imageMsg);
 
   // Publish the aggregated transforms
-  // if (!transforms.empty())
-  //   transformBroadcaster->sendTransform(transforms);
+  if (!transforms.empty())
+    transformBroadcaster->sendTransform(transforms);
 }
 
 bool ROSLogicalCameraPlugin::ModelToPublish(

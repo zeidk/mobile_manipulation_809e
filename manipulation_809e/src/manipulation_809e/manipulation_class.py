@@ -19,12 +19,12 @@ from geometry_msgs.msg import Pose
 from geometry_msgs.msg import TransformStamped
 from std_srvs.srv import Trigger
 from std_msgs.msg import String
-from moveit_python import MoveGroupInterface, PlanningSceneInterface, PickPlaceInterface
 from tf.transformations import quaternion_multiply, quaternion_from_euler
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 # moveit
 import moveit_commander as mc
+
 
 class MoveitKairos():
 
@@ -33,9 +33,11 @@ class MoveitKairos():
 
         mc.roscpp_initialize(sys.argv)
         rospy.init_node(node_name, anonymous=True)
-        # self._pick_place = PickPlaceInterface("ur5_arm", "egh_gripper", verbose=True)
-        self.trajectory_pub = rospy.Publisher('/robot/gripper/pos_traj_controller/command', JointTrajectory, queue_size=10)
-        self.locations={}
+        self.trajectory_pub = rospy.Publisher(
+            '/robot/gripper/pos_traj_controller/command',
+            JointTrajectory,
+            queue_size=10)
+        self.locations = {}
         # Joint positions for the arm
 
         # robot_arm_shoulder_pan_joint
@@ -44,10 +46,13 @@ class MoveitKairos():
         # robot_arm_wrist_1_joint
         # robot_arm_wrist_2_joint
         # robot_arm_wrist_3_joint
-       
-        
+
         name = 'home'
-        kairos_arm = [pi/4, 0, -2, 2, pi/2, 0]
+        kairos_arm = [0.85, -0.65, -2.50, -pi/2, pi/2, pi/2]
+        self.locations[name] = (kairos_arm)
+        
+        name = 'table2_grasp'
+        kairos_arm = [0.85, -1.15, -0.93, -pi/2, pi/2, pi/2]
         self.locations[name] = (kairos_arm)
 
         name = 'check'
@@ -58,10 +63,6 @@ class MoveitKairos():
         kairos_arm = [-4.02, -0.13, -2.45, 0.75, 0, 0]
         self.locations[name] = (kairos_arm)
 
-
-
-
-
         self.robot = mc.RobotCommander(ns + '/' + robot_description, ns)
         self.scene = mc.PlanningSceneInterface(ns)
         # Define MoveIt groups
@@ -70,25 +71,33 @@ class MoveitKairos():
         self.groups = {}
         for group_name in self.kairos_moveit_groups:
             if group_name == "ur5_arm":
-                group = mc.MoveGroupCommander(group_name, robot_description=ns + '/' + robot_description, ns=ns)
+                group = mc.MoveGroupCommander(
+                    group_name, robot_description=ns + '/' + robot_description, 
+                    ns=ns)
             elif group_name == "egh_gripper":
-                group = mc.MoveGroupCommander(group_name, robot_description=ns + '/' + robot_description, ns=ns)
+                group = mc.MoveGroupCommander(
+                    group_name, robot_description=ns + '/' + robot_description, 
+                    ns=ns)
                 group.set_goal_tolerance(0.05)
             self.groups[group_name] = group
         # self.goto_preset_location("check")
         # self.go_home()
 
+    def cartesian_move(self, group, waypoints):
+        group.set_pose_reference_frame("robot_map")
+        (plan, fraction) = group.compute_cartesian_path(waypoints, 0.01, 0.0)
+        group.execute(plan, wait=True)
+        
     def open_gripper(self):
         jt = JointTrajectory()
         jt.joint_names = ['robot_egh_gripper_finger_left_joint']
         jt.header.stamp = rospy.Time.now()
         jtp = JointTrajectoryPoint()
-        jtp.positions = [0.04]
+        jtp.positions = [0.05]
         jtp.velocities = [0.01]
         jtp.time_from_start = rospy.Duration(3.0)
         jt.points.append(jtp)
         self.trajectory_pub.publish(jt)
-
 
         # group = self.groups['egh_gripper']
         # finger_position = group.get_current_joint_values()
@@ -102,15 +111,14 @@ class MoveitKairos():
         jt.joint_names = ['robot_egh_gripper_finger_left_joint']
         jt.header.stamp = rospy.Time.now()
         jtp = JointTrajectoryPoint()
-        jtp.positions = [0.00]
-        jtp.velocities = [0.01]
-        jtp.time_from_start = rospy.Duration(3.0)
+        jtp.positions = [0]
+        jtp.velocities = [0.07]
+        # jtp.time_from_start = rospy.Duration(1.0)
         jt.points.append(jtp)
         self.trajectory_pub.publish(jt)
 
     def go_home(self):
         self.goto_preset_location('home')
-
 
     def goto_preset_location(self, location_name):
 
@@ -118,9 +126,9 @@ class MoveitKairos():
 
         kairos_arm = self.locations[location_name]
         location_pose = group.get_current_joint_values()
- 
+
         location_pose[:] = kairos_arm
-        
+
         # If the robot controller reports a path tolerance violation,
         # this will automatically re-attempt the motion
         MAX_ATTEMPTS = 5

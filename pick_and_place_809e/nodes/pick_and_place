@@ -1,51 +1,108 @@
 #!/usr/bin/env python
 
 # ros
-from manipulation_809e  import manipulation_class
-from navigation_809e  import navigation_class
+from manipulation_809e import manipulation_class
+from navigation_809e import navigation_class
 import rospy
+import copy
+import tf2_ros
+from geometry_msgs.msg import TransformStamped, Pose
+
+
+def get_gripper_map_pose():
+    tf_buffer = tf2_ros.Buffer(rospy.Duration(3.0))
+    tf2_ros.TransformListener(tf_buffer)
+
+    world_target_tf = TransformStamped()
+    # Get the transform between world and target_frame
+
+    for _ in range(20):
+        try:
+            world_target_tf = tf_buffer.lookup_transform(
+                'robot_map', 'robot_arm_tool0', rospy.Time(), rospy.Duration(3))
+        except (tf2_ros.LookupException,
+                tf2_ros.ConnectivityException,
+                tf2_ros.ExtrapolationException):
+            rospy.logerr("Unable to lookup transform")
+
+    gripper_world_pose = Pose()
+    gripper_world_pose.position = world_target_tf.transform.translation
+    gripper_world_pose.orientation = world_target_tf.transform.rotation
+    return gripper_world_pose
 
 
 def main():
     rospy.init_node('pick_and_place', anonymous=True)
     manipulation = manipulation_class.MoveitKairos(ns='/robot')
+    manipulation.close_gripper()
+    rospy.sleep(2.0)
     manipulation.goto_preset_location("home")
-    part_pose = [-1.093374, 4.087609, 0.889384, 0, 0, 0]
+
+    part_pose = [-1.093374, 4.087609, 0.829555, 0, 0, 0]
     kairos_arm = manipulation.groups['ur5_arm']
-    kairos_arm.set_goal_orientation_tolerance = 0.02
-    kairos_arm.set_goal_position_tolerance = 0.02
-    ee_pose = kairos_arm.get_current_pose().pose
-    
+
+    # end effector is sent in the robot_base_footprint frame
+    rospy.loginfo(kairos_arm.get_planning_frame())
+    kairos_arm.set_goal_orientation_tolerance = 0.005
+    kairos_arm.set_goal_position_tolerance = 0.005
 
     # kairos_joints = kairos_arm.get_current_joint_values()
-    kairos_arm.set_joint_value_target(ee_pose)
-    kairos_arm.go()
-    rospy.sleep(0.5)
-
-    manipulation.open_gripper()
-    manipulation.close_gripper()
-    
-    # moveit_kairos.handle_inputs()
-    navigation = navigation_class.Navigation()
-    # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="table2")
-
-    # # navigation.handle_inputs()
-    # # manipulation.goto_preset_location("retract")
-    # # manipulation.goto_preset_location("home")
-    
-    # ee_pose.position.x = part_pose[0]-0.05
-    # ee_pose.position.y = part_pose[1]
+    # ee_pose = kairos_arm.get_current_pose().pose
     # kairos_arm.set_joint_value_target(ee_pose)
+    # kairos_arm.go()
+    # rospy.sleep(0.5)
+
+    # manipulation.open_gripper()
+    # manipulation.close_gripper()
+
+    navigation = navigation_class.Navigation()
+    navigation.move_to(goal_x=None,
+                       goal_y=None,
+                       goal_yaw=None,
+                       spot="pre_table2")
+    manipulation.goto_preset_location("table2_grasp")
+    navigation.move_to(goal_x=None,
+                       goal_y=None,
+                       goal_yaw=None,
+                       spot="table2")
+
+    gripper_map_pose = get_gripper_map_pose()
+    
+    gripper_map_pose.position.x = part_pose[0]
+    gripper_map_pose.position.y = part_pose[1] + 0.02
+    gripper_map_pose.position.z = part_pose[2] + 0.25
+    gripper_map_pose.orientation.x = 0.009
+    gripper_map_pose.orientation.y = 1
+    gripper_map_pose.orientation.z = 0.003
+    gripper_map_pose.orientation.w = -0.025
+    kairos_arm.set_pose_reference_frame("robot_map")
+    kairos_arm.set_pose_target(gripper_map_pose)
+    kairos_arm.go()
+    rospy.loginfo(gripper_map_pose)
 
     
+    # Motions to grasp the part
+    manipulation.open_gripper()
+    rospy.sleep(5)
     
-    # # manipulation.goto_preset_location("table2")
-    # # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="check")
-    # # manipulation.goto_preset_location("retract")
-    # # manipulation.goto_preset_location("check")
-    # # manipulation.goto_preset_location("retract")
-    # # manipulation.goto_preset_location("home")
-    # # navigation.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot="home")
+    # Get the current pose of the gripper
+    gripper_map_pose = get_gripper_map_pose()
+    
+    # pre-grasp pose
+    near_pick_pose = copy.deepcopy(gripper_map_pose)
+    near_pick_pose.position.z = gripper_map_pose.position.z - 0.05
+    # grasp pose
+    pick_pose = copy.deepcopy(gripper_map_pose)
+    pick_pose.position.z = gripper_map_pose.position.z - 0.09
+    path = [near_pick_pose, pick_pose]
+    
+    manipulation.cartesian_move(kairos_arm, path)
+    rospy.sleep(5)
+    manipulation.close_gripper()
+    rospy.loginfo(gripper_map_pose)
+    
+
 
 if __name__ == '__main__':
+    # while not rospy.is_shutdown():
     main()

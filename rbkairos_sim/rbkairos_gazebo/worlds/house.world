@@ -60,10 +60,10 @@
   </model>
 
   <!-- Part on table 2 -->
-  <model name="assembly_pump_green_0">
+  <model name="assembly_battery_green_0">
     <include>
       <static>false</static>
-      <uri>model://assembly_pump_green_ariac</uri>
+      <uri>model://assembly_battery_green_ariac</uri>
     </include>
     <pose>-1.093374 4.087609 0.889384 0 0 0</pose>
   </model>

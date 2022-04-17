@@ -30,8 +30,10 @@ class Navigation():
         # MoveBase stuff
         self._check = [-6.3703, 2.2929, 0, 0, 0, -0.6866, 0.727]
         self._home = [0, 0, 0, 0, 0, 0, 1]
-        self._table2 = [-1.70789669814, 4.087609, 0, 0, 0, 1, 0]
-        self.client = actionlib.SimpleActionClient('robot/move_base', MoveBaseAction)
+        self._pre_table2 = [-3, 3.8, 0, 0, 0, 0, 1]
+        self._table2 = [-1.4, 3.8, 0, 0, 0, 0, 1]
+        self.client = actionlib.SimpleActionClient(
+            'robot/move_base', MoveBaseAction)
         self.client.wait_for_server()
         self.goal = MoveBaseGoal()
         self.goal.target_pose.header.frame_id = "robot_map"
@@ -59,9 +61,6 @@ class Navigation():
         self._parent_frame = 'odom'
         # child frame for the listener
         self._child_frame = 'base_footprint'
-
-
-
 
     def odom_callback(self, msg):
         """
@@ -99,16 +98,17 @@ class Navigation():
         except (tf.Exception, tf.ConnectivityException, tf.LookupException):
             rospy.logfatal("TF Exception")
 
-            
     def move_to(self, goal_x=None, goal_y=None, goal_yaw=None, spot=None):
-       
+
         chosen_spot = []
         if spot is not None:
-            if spot=="home":
+            if spot == "home":
                 chosen_spot = copy.deepcopy(self._home)
-            elif spot=="check":
+            elif spot == "check":
                 chosen_spot = copy.deepcopy(self._check)
-            elif spot=="table2":
+            elif spot == "pre_table2":
+                chosen_spot = copy.deepcopy(self._pre_table2)
+            elif spot == "table2":
                 chosen_spot = copy.deepcopy(self._table2)
             self.goal.target_pose.pose.position.x = chosen_spot[0]
             self.goal.target_pose.pose.position.y = chosen_spot[1]
@@ -119,13 +119,13 @@ class Navigation():
         else:
             self.goal.target_pose.pose.position.x = goal_x
             self.goal.target_pose.pose.position.y = goal_y
-            quaternion = tf.transformations.quaternion_from_euler(0, 0, goal_yaw)
-            #type(pose) = geometry_msgs.msg.Pose
+            quaternion = tf.transformations.quaternion_from_euler(
+                0, 0, goal_yaw)
+            # type(pose) = geometry_msgs.msg.Pose
             self.goal.target_pose.pose.orientation.x = quaternion[0]
             self.goal.target_pose.pose.orientation.y = quaternion[1]
             self.goal.target_pose.pose.orientation.z = quaternion[2]
             self.goal.target_pose.pose.orientation.w = quaternion[3]
-        
 
         self.client.send_goal(self.goal)
         wait = self.client.wait_for_result()
@@ -210,7 +210,8 @@ class Navigation():
             if x is not None and y is not None and yaw is not None:
                 self.move_to(goal_x=x, goal_y=y, goal_yaw=yaw, spot=None)
             if spot is not None:
-                self.move_to(goal_x=None, goal_y=None, goal_yaw=None, spot=spot)
+                self.move_to(goal_x=None, goal_y=None,
+                             goal_yaw=None, spot=spot)
             else:
                 rospy.logerr("x, y, yaw, or spot is missing")
                 rospy.on_shutdown(self.myhook)
@@ -241,4 +242,3 @@ class Navigation():
         data['aruco_marker_0']['rpy'] = [1, 1, 1]
         with open(fname, 'w') as yaml_file:
             yaml_file.write(yaml.dump(data, default_flow_style=False))
-
