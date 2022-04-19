@@ -52,7 +52,7 @@ class MoveitKairos():
         self.locations[name] = (kairos_arm)
         
         name = 'table2_grasp'
-        kairos_arm = [0.85, -1.15, -0.93, -pi/2, pi/2, pi/2]
+        kairos_arm = [0.85, -1.78, -0.93, -2.03, pi/2, pi/2]
         self.locations[name] = (kairos_arm)
 
         name = 'check'
@@ -126,17 +126,10 @@ class MoveitKairos():
 
         kairos_arm = self.locations[location_name]
         location_pose = group.get_current_joint_values()
-
         location_pose[:] = kairos_arm
+        group.go(location_pose, wait=True)
 
-        # If the robot controller reports a path tolerance violation,
-        # this will automatically re-attempt the motion
-        MAX_ATTEMPTS = 5
-        attempts = 0
-        while not group.go(location_pose, wait=True):
-            attempts += 1
-            assert(attempts < MAX_ATTEMPTS)
-
+        
     def myhook(self):
         """
         Function to call when shutting down a Node

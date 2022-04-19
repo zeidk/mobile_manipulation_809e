@@ -17,7 +17,7 @@ from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
 
 class Navigation():
     """
-    A controller class to drive a turtlebot in Gazebo.
+    A controller class to drive a mobile base in Gazebo.
     """
 
     def __init__(self, rate=10):
@@ -30,8 +30,8 @@ class Navigation():
         # MoveBase stuff
         self._check = [-6.3703, 2.2929, 0, 0, 0, -0.6866, 0.727]
         self._home = [0, 0, 0, 0, 0, 0, 1]
-        self._pre_table2 = [-3, 3.8, 0, 0, 0, 0, 1]
-        self._table2 = [-1.4, 3.8, 0, 0, 0, 0, 1]
+        self._pre_table2 = [-3, 4.087609, 0, 0, 0, 0, 1]
+        self._table2 = [-1.4, 4.087609, 0, 0, 0, 0, 1]
         self.client = actionlib.SimpleActionClient(
             'robot/move_base', MoveBaseAction)
         self.client.wait_for_server()
@@ -98,7 +98,7 @@ class Navigation():
         except (tf.Exception, tf.ConnectivityException, tf.LookupException):
             rospy.logfatal("TF Exception")
 
-    def move_to(self, goal_x=None, goal_y=None, goal_yaw=None, spot=None):
+    def move_to(self, goal_x=None, goal_y=None, orientation=None, spot=None):
 
         chosen_spot = []
         if spot is not None:
@@ -119,13 +119,17 @@ class Navigation():
         else:
             self.goal.target_pose.pose.position.x = goal_x
             self.goal.target_pose.pose.position.y = goal_y
-            quaternion = tf.transformations.quaternion_from_euler(
-                0, 0, goal_yaw)
-            # type(pose) = geometry_msgs.msg.Pose
-            self.goal.target_pose.pose.orientation.x = quaternion[0]
-            self.goal.target_pose.pose.orientation.y = quaternion[1]
-            self.goal.target_pose.pose.orientation.z = quaternion[2]
-            self.goal.target_pose.pose.orientation.w = quaternion[3]
+            self.goal.target_pose.pose.orientation.x = orientation.x
+            self.goal.target_pose.pose.orientation.y = orientation.y
+            self.goal.target_pose.pose.orientation.z = orientation.z
+            self.goal.target_pose.pose.orientation.w = orientation.w
+            # quaternion = tf.transformations.quaternion_from_euler(
+            #     0, 0, goal_yaw)
+            # # type(pose) = geometry_msgs.msg.Pose
+            # self.goal.target_pose.pose.orientation.x = quaternion[0]
+            # self.goal.target_pose.pose.orientation.y = quaternion[1]
+            # self.goal.target_pose.pose.orientation.z = quaternion[2]
+            # self.goal.target_pose.pose.orientation.w = quaternion[3]
 
         self.client.send_goal(self.goal)
         wait = self.client.wait_for_result()
