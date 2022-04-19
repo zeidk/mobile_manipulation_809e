@@ -10,6 +10,7 @@ from geometry_msgs.msg import TransformStamped, Pose
 from geometry_msgs.msg import PoseWithCovarianceStamped, Quaternion, Point
 from geometry_msgs.msg import Twist
 
+
 class MobileManipulation():
     """
     A class for mobile manipulation
@@ -17,8 +18,10 @@ class MobileManipulation():
 
     def __init__(self):
         rospy.init_node('pick_and_place', anonymous=True)
-        rospy.Subscriber("robot/amcl_pose", PoseWithCovarianceStamped, self.amcl_callback)
-        self._cmd_vel_pub = rospy.Publisher('/robot/move_base/cmd_vel', Twist, queue_size=10)
+        rospy.Subscriber("robot/amcl_pose",
+                         PoseWithCovarianceStamped, self.amcl_callback)
+        self._cmd_vel_pub = rospy.Publisher(
+            '/robot/move_base/cmd_vel', Twist, queue_size=10)
         self._manipulation = manipulation_class.MoveitKairos(ns='/robot')
         self._navigation = navigation_class.Navigation()
         self._mobile_base_position = Point()
@@ -27,7 +30,7 @@ class MobileManipulation():
     @property
     def manipulation(self):
         return self._manipulation
-    
+
     @property
     def navigation(self):
         return self._navigation
@@ -35,11 +38,11 @@ class MobileManipulation():
     @property
     def mobile_base_position(self):
         return self._mobile_base_position
-    
+
     @property
     def mobile_base_orientation(self):
         return self._mobile_base_orientation
-    
+
     def cmd_vel_to(self, linear_x, linear_y, angular_z):
         msg_twist = Twist()
         msg_twist.linear.x = linear_x
@@ -58,8 +61,8 @@ class MobileManipulation():
             try:
                 transform_stamped = tf_buffer.lookup_transform(
                     source,
-                    target, 
-                    rospy.Time(), 
+                    target,
+                    rospy.Time(),
                     rospy.Duration(1.0))
             except (tf2_ros.LookupException,
                     tf2_ros.ConnectivityException,
@@ -72,7 +75,7 @@ class MobileManipulation():
         return pose
 
     def get_gripper_pose_in_frame(self, frame):
-        tf_buffer = tf2_ros.Buffer(rospy.Duration(3.0))
+        tf_buffer = tf2_ros.Buffer(rospy.Duration(1.0))
         tf2_ros.TransformListener(tf_buffer)
 
         transform_stamped = TransformStamped()
@@ -82,8 +85,8 @@ class MobileManipulation():
             try:
                 transform_stamped = tf_buffer.lookup_transform(
                     frame,
-                    'robot_arm_tool0', 
-                    rospy.Time(), 
+                    'robot_arm_tool0',
+                    rospy.Time(),
                     rospy.Duration(1.0))
             except (tf2_ros.LookupException,
                     tf2_ros.ConnectivityException,
@@ -97,11 +100,11 @@ class MobileManipulation():
 
     def amcl_callback(self, msg):
         # rospy.loginfo("getting robot pose")
-        
-        self._mobile_base_position  = msg.pose.pose.position
+
+        self._mobile_base_position = msg.pose.pose.position
         # rospy.loginfo(self._mobile_base_position.x)
         # rospy.loginfo(self._mobile_base_position.y)
-        self._mobile_base_orientation  = msg.pose.pose.orientation
+        self._mobile_base_orientation = msg.pose.pose.orientation
 
 
 def main():
@@ -118,7 +121,6 @@ def main():
     kairos_arm_group.set_goal_orientation_tolerance = 0.005
     kairos_arm_group.set_goal_position_tolerance = 0.005
 
-    
     # kairos_joints = kairos_arm.get_current_joint_values()
     # ee_pose = kairos_arm_group.get_current_pose().pose
     # kairos_arm.set_joint_value_target(ee_pose)
@@ -128,11 +130,10 @@ def main():
     # manipulation.open_gripper()
     # manipulation.close_gripper()
 
-
     mobile_manipulation.navigation.move_to(goal_x=None,
-                       goal_y=None,
-                       orientation=None,
-                       spot="pre_table2")
+                                           goal_y=None,
+                                           orientation=None,
+                                           spot="pre_table2")
     mobile_manipulation.manipulation.goto_preset_location("table2_grasp")
     rospy.sleep(2.0)
 
@@ -143,13 +144,15 @@ def main():
     #                    goal_y=None,
     #                    orientation=None,
     #                    spot="table2")
-    gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame("robot_map")
+    gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+        "robot_map")
     print("gripper_map_pose_x", gripper_map_pose.position.x)
 
     # get the pose of the gripper relative to robot_base_footprint
-    gripper_robot_pose = mobile_manipulation.get_gripper_pose_in_frame("robot_base_footprint")
+    gripper_robot_pose = mobile_manipulation.get_gripper_pose_in_frame(
+        "robot_base_footprint")
     # print("gripper_robot_pose_x", gripper_robot_pose.position.x)
-    
+
     delta_gripper_robot_x = abs(gripper_robot_pose.position.x)
     delta_gripper_robot_y = abs(gripper_robot_pose.position.y)
     print("delta_gripper_robot_x", delta_gripper_robot_x)
@@ -158,7 +161,8 @@ def main():
     print("delta_gripper_part_x", delta_gripper_part_x)
     delta_gripper_part_y = abs(gripper_map_pose.position.y) - abs(part_pose[1])
 
-    robot_current_pose =  mobile_manipulation.get_transform(source="robot_map", target="robot_base_footprint")
+    robot_current_pose = mobile_manipulation.get_transform(
+        source="robot_map", target="robot_base_footprint")
     delta_base_part_x = abs(robot_current_pose.position.x)-abs(part_pose[0])
     delta_base_part_y = abs(robot_current_pose.position.y)-abs(part_pose[1])
     print("delta_base_part_x", delta_base_part_x)
@@ -167,15 +171,14 @@ def main():
     distance_to_drive_y = delta_base_part_y - delta_gripper_robot_y
     print("distance to drive", distance_to_drive_x)
 
-    
     print("current_robot_x", robot_current_pose.position.x)
     robot_goal_x = robot_current_pose.position.x + distance_to_drive_x
     robot_goal_y = robot_current_pose.position.y - distance_to_drive_y
     print("robot_goal_x", robot_goal_x)
-    
-    mobile_manipulation.navigation.move_to(robot_goal_x, 
-        robot_goal_y, 
-        robot_current_pose.orientation)
+
+    mobile_manipulation.navigation.move_to(robot_goal_x,
+                                           robot_goal_y,
+                                           robot_current_pose.orientation)
 
     # --------------------
     # delta_x = gripper_map_pose.position.x - part_pose[0]
@@ -199,7 +202,7 @@ def main():
     #     else:
     #         mobile_manipulation.cmd_vel_to(-0.01,0,0)
     #     rate.sleep()
-    
+
     # rospy.loginfo("Stop robot")
     # mobile_manipulation.cmd_vel_to(0,0,0)
 
@@ -221,16 +224,12 @@ def main():
     # # mobile_manipulation.cmd_vel_to(mobile_manipulation.mobile_base_position.x + delta_x,
     # # mobile_manipulation.mobile_base_position.y + delta_y,
     # # 0)
-    # # mobile_manipulation.navigation.move_to(mobile_manipulation.mobile_base_position.x - delta_x, 
-    # # mobile_manipulation.mobile_base_position.y - delta_y, 
+    # # mobile_manipulation.navigation.move_to(mobile_manipulation.mobile_base_position.x - delta_x,
+    # # mobile_manipulation.mobile_base_position.y - delta_y,
     # # mobile_manipulation.mobile_base_orientation)
-    
-
-
-    
 
     # gripper_map_pose = get_gripper_map_pose()
-    
+
     # gripper_map_pose.position.x = part_pose[0]
     # gripper_map_pose.position.y = part_pose[1] + 0.02
     # gripper_map_pose.position.z = part_pose[2] + 0.25
@@ -243,14 +242,13 @@ def main():
     # kairos_arm.go()
     # rospy.loginfo(gripper_map_pose)
 
-    
     # # Motions to grasp the part
     # manipulation.open_gripper()
     # rospy.sleep(5)
-    
+
     # # Get the current pose of the gripper
     # gripper_map_pose = get_gripper_map_pose()
-    
+
     # # pre-grasp pose
     # near_pick_pose = copy.deepcopy(gripper_map_pose)
     # near_pick_pose.position.z = gripper_map_pose.position.z - 0.05
@@ -258,15 +256,103 @@ def main():
     # pick_pose = copy.deepcopy(gripper_map_pose)
     # pick_pose.position.z = gripper_map_pose.position.z - 0.09
     # path = [near_pick_pose, pick_pose]
-    
+
     # manipulation.cartesian_move(kairos_arm, path)
     # rospy.sleep(5)
     # manipulation.close_gripper()
     # rospy.loginfo(gripper_map_pose)
-    
+
+
+def main2():
+    # Position of the part to grasp (x, y, z)
+    part_pose = [-1.093374, 4.087609, 0.829555]
+    # MobileManipulation object
+    mobile_manipulation = MobileManipulation()
+    # Tuck the arm
+    mobile_manipulation.manipulation.goto_preset_location("home")
+    # Moveit group
+    kairos_arm_group = mobile_manipulation.manipulation.groups['ur5_arm']
+    kairos_arm_group.set_pose_reference_frame("robot_map")
+    # Set arm tolerance to 5 mm
+    kairos_arm_group.set_goal_orientation_tolerance = 0.001
+    kairos_arm_group.set_goal_position_tolerance = 0.001
+    print("End effector link", kairos_arm_group.get_end_effector_link())
+    # check end effector is sent in the robot_base_footprint frame
+    # rospy.loginfo(kairos_arm_group.get_planning_frame())
+    # Move robot base to face the table
+    orientation = Pose().orientation
+    orientation.x = 0
+    orientation.y = 0
+    orientation.z = 0
+    orientation.w = 1
+    mobile_manipulation.navigation.move_to(goal_x=part_pose[0] - 1,
+                                           goal_y=part_pose[1],
+                                           orientation=orientation)
+    # Move the arm into a pre-grasp configuration
+    # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    # First, get the current pose th
+    gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+        "robot_map")
+
+    # Make the gripper face down and aligned with the part
+
+    gripper_map_pose.position.x = part_pose[0] - 0.4
+    gripper_map_pose.position.y = part_pose[1]
+    gripper_map_pose.position.z = part_pose[2] + 0.25
+    gripper_map_pose.orientation.x = 0
+    gripper_map_pose.orientation.y = 1
+    gripper_map_pose.orientation.z = 0
+    gripper_map_pose.orientation.w = 0
+
+    kairos_arm_group.set_pose_target(gripper_map_pose)
+    kairos_arm_group.go()
+
+    # Check the gripper y position is aligned with the part
+    gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+        "robot_map")
+    if abs(gripper_map_pose.position.y) - abs(part_pose[1]) > 0.005 or abs(gripper_map_pose.position.y) - abs(part_pose[1]) < 0.005:
+        MAX_ATTEMPT = 10
+        for _ in range(MAX_ATTEMPT):
+            gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+                "robot_map")
+            rospy.sleep(0.2)
+            if abs(gripper_map_pose.position.y) - abs(part_pose[1]) > 0.005 or abs(gripper_map_pose.position.y) - abs(part_pose[1]) < 0.005:
+                # Tuck the arm
+                mobile_manipulation.manipulation.goto_preset_location("home")
+                kairos_arm_group.set_pose_target(gripper_map_pose)
+                kairos_arm_group.go()
+
+    rospy.loginfo(gripper_map_pose)
+
+    # Get the current pose of the gripper
+    gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+        "robot_map")
+    # While it's not above the part, move the base
+    rate = rospy.Rate(10)
+    while abs(gripper_map_pose.position.x) - abs(part_pose[0]) >= 0.001:
+        gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+            "robot_map")
+        rospy.loginfo(abs(gripper_map_pose.position.x) - abs(part_pose[0]))
+        mobile_manipulation.cmd_vel_to(0.04, 0, 0)
+        rate.sleep()
+    # Stop the base
+    mobile_manipulation.cmd_vel_to(0.0, 0, 0)
+    # Open the gripper
+    mobile_manipulation.manipulation.open_gripper()
+    # Go down
+    # Get the current pose of the gripper
+    gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+        "robot_map")
+    while gripper_map_pose.position.z - part_pose[2] > 0.05:
+        gripper_map_pose = mobile_manipulation.get_gripper_pose_in_frame(
+            "robot_map")
+        gripper_map_pose.position.z -= 0.01
+        kairos_arm_group.set_pose_target(gripper_map_pose)
+        kairos_arm_group.go()
 
 
 if __name__ == '__main__':
     # while not rospy.is_shutdown():
-    main()
+    main2()
     rospy.spin()
